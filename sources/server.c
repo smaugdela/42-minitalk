@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*	                                                                          */
 /*                                                        :::      ::::::::   */
-/*   minitalk.c                                         :+:      :+:    :+:   */
+/*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,40 +12,63 @@
 
 #include "minitalk.h"
 
-__int8_t	global;
+t_hermes	global;
 
-void	my_sig(int param)
+static void	my_sig(int param, siginfo_t *info, void *context)
 {
-
+	(void)context;
 	if (param == SIGUSR1)
+		global.signal = 0;
+	else if (param == SIGUSR2)
+		global.signal = 1;
+	else if (param == SIGINT || param == SIGQUIT)
 	{
-		global = 0;
+		// free correctement?
+		exit(0);
 	}
-	if (param == SIGUSR2)
-	{
-		global = 1;
-	}
+	global.client_pid = info->si_pid;
 }
 
 int     main()
 {
-	int					pid;
 	struct sigaction	act;
 	int					i;
-	__uint8_t			c;
+	int					str_len;
 //	Uncomment if signals need to be blocked during handling
 //	sigset_t			blocked;
 //	sigemptyset(&blocked);
 //	sigaddset(&blocked, SIGUSR2);
 
-	act.sa_handler = my_sig;
-	pid = getpid();
-	ft_printf("Server pid is: %d\n", pid);
+	act.sa_sigaction = my_sig;
+	act.sa_flags = SA_SIGINFO;
+	ft_printf("Server pid is: %d\n", getpid());
 	if (sigaction(SIGUSR1, &act, NULL) == -1 || sigaction(SIGUSR2, &act, NULL) == -1)
 	{
 		ft_putstr_fd("Error.\n", 2);
 		return(42);
 	}
+	str_len = 0;
+	i = sizeof(str_len) * 8;
+	while(i--)
+	{
+		pause();
+		if (global.signal == 1)
+			str_len = str_len | (1 << ((sizeof(str_len) * 8) - i - 1));
+	}
+	ft_printf("strlen = %d\n", str_len);	//should malloc the string here.
+	sleep(5);
+	if (global.signal == 1)
+	{
+		ft_printf("Messij received from client.\nResponding OK signal to client shortly, at pid %d\n", global.client_pid);
+		sleep(3);
+		kill(global.client_pid, SIGUSR2);
+	}
+	else
+	{
+		ft_printf("No signal received.\n");
+	}
+	return (0);
+/*
 	while (1)
 	{
 		i = 0;
@@ -59,4 +82,5 @@ int     main()
 		}
 		write(1, &c, 1);
 	}
+*/
 }

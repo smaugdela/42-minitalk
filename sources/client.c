@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 14:46:14 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/23 15:40:12 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/11/23 16:04:02 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,13 +43,14 @@ static void client_signal_handler(int param)
 {
 	if (param == SIGUSR2)
 	{
-		ft_printf("Messij received from server! Now closing.\n");
+		ft_printf("Messij received from server! Now transmitting string...\n");
 		exit(0);
 	}
 }
 
 int	main(int argc, char **argv)
 {
+	int8_t				c;
 	size_t				str_len;
 	int					pid;
 	int					i;
@@ -65,7 +66,7 @@ int	main(int argc, char **argv)
 	}
 	pid = ft_atoi(argv[1]);
 	str_len = ft_strlen(argv[2]);
-	ft_printf("strlen = %d\n", str_len);
+	ft_printf("Transmitting metadata: strlen = %d\n", str_len);
 	i = sizeof(str_len) * 8;
 	while(i--)
 	{
@@ -77,5 +78,20 @@ int	main(int argc, char **argv)
 		usleep(1000000 / TRANSMISSION_FREQ);
 	}
 	pause();
+	while(str_len < ft_strlen(argv[2]))
+	{
+		c = argv[2][str_len];
+		i = sizeof(c) * 8;
+		while(i--)
+		{
+			if (c & 1)
+				kill(pid, SIGUSR2);
+			else
+				kill(pid, SIGUSR1);
+			c = c >> 1;
+			usleep(1000000 / TRANSMISSION_FREQ);
+		}
+		++str_len; 
+	}
 	return (0);
 }

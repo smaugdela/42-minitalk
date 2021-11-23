@@ -30,6 +30,7 @@ static size_t	roger_str(int sig, char *str)
 	static int		i = sizeof(c) * 8;
 	static size_t	index_c = 0;
 
+	ft_printf("\n\nje passe dans roger_str...\n\n");
 	if (i--)
 		c = c | (1 << ((sizeof(c) * 8) - i - 1));
 	else if (sig == 0 && str == NULL)
@@ -41,6 +42,7 @@ static size_t	roger_str(int sig, char *str)
 	else
 	{
 		str[index_c] = (char)c;
+		ft_printf("%s", str);
 		i = 8;
 		c = 0;
 		++index_c;
@@ -51,7 +53,7 @@ static size_t	roger_str(int sig, char *str)
 static void	my_sig(int sig, siginfo_t *info, void *context)
 {
 	static size_t	s_len = 0;
-	static t_bool	metadata = 1;
+	static t_bool	metadata = TRUE;
 	char			*str;
 
 	(void)context;
@@ -65,14 +67,14 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 			if (str == NULL)
 				exit(42);
 			str[s_len] = '\0';
-			metadata = 0;
+			metadata = FALSE;
 			kill(info->si_pid, SIGUSR2);
 		}
 		if (!metadata && roger_str(sig, str) == s_len)
 		{
 			ft_putstr_fd(str, 1);
 			free(str);
-			metadata = 1;
+			metadata = TRUE;
 			roger_str(0, NULL);
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 14:55:02 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/23 11:51:49 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/11/23 15:37:53 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,6 @@
 # ifndef TRANSMISSION_FREQ
 #  define TRANSMISSION_FREQ 100000
 # endif
-
-/*
-typedef struct s_hermes
-{
-	int8_t	signal;
-	int		client_pid;
-}	t_hermes;
-*/
 
 size_t	ft_nblen(int64_t nb);
 

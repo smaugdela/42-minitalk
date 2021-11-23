@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 14:46:14 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/23 11:44:09 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/11/23 15:40:12 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,13 @@ static void client_signal_handler(int param)
 	if (param == SIGUSR2)
 	{
 		ft_printf("Messij received from server! Now closing.\n");
+		exit(0);
 	}
 }
 
 int	main(int argc, char **argv)
 {
-	int					str_len;
+	size_t				str_len;
 	int					pid;
 	int					i;
 	struct sigaction	act;
@@ -75,10 +76,6 @@ int	main(int argc, char **argv)
 		str_len = str_len >> 1;
 		usleep(1000000 / TRANSMISSION_FREQ);
 	}
-	ft_printf("Finnished sending strlen, sending OK signal to server shortly.\n");
-	sleep(3);
-	kill(pid, SIGUSR2);
-	ft_printf("Waiting for response...\n");
 	pause();
 	return (0);
 }

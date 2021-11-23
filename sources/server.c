@@ -16,7 +16,7 @@ static int	roger_strlen(int sig, size_t *s_len)
 {
 	static int	i = sizeof(*s_len) * 8;
 
-	while(i--)
+	if (i--)
 	{
 		if (sig == SIGUSR2)
 			*s_len = *s_len | (1 << ((sizeof(*s_len) * 8) - i - 1));
@@ -24,21 +24,28 @@ static int	roger_strlen(int sig, size_t *s_len)
 	return (i);
 }
 
-static void	roger_str(int sig, char *str)
+static size_t	roger_str(int sig, char *str)
 {
-	static int		i = 8;
 	static int8_t	c = 0;
+	static int		i = sizeof(c) * 8;
+	static size_t	index_c = 0;
 
 	if (i--)
+		c = c | (1 << ((sizeof(c) * 8) - i - 1));
+	else if (sig == 0 && str == NULL)
 	{
-
+		i = 8;
+		c = 0;
+		index_c = 0;
 	}
 	else
 	{
-		str[?] = (char)c;
+		str[index_c] = (char)c;
 		i = 8;
 		c = 0;
+		++index_c;
 	}
+	return (index_c);
 }
 
 static void	my_sig(int sig, siginfo_t *info, void *context)
@@ -48,11 +55,12 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 	char			*str;
 
 	(void)context;
+	str = NULL;
 	if (sig == SIGUSR1 || sig == SIGUSR2)
 	{
 		if (metadata && roger_strlen(sig, &s_len) == 0)
 		{
-			ft_printf("strlen = %d\n", s_len);	//should malloc the string here.
+			ft_printf("strlen = %d\n", s_len);
 			str = malloc((s_len + 1) * sizeof(char));
 			if (str == NULL)
 				exit(42);
@@ -60,24 +68,23 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 			metadata = 0;
 			kill(info->si_pid, SIGUSR2);
 		}
-		else if (!metadata && s_len--)
-			roger_str(sig, str);
-		else
+		if (!metadata && roger_str(sig, str) == s_len)
 		{
 			ft_putstr_fd(str, 1);
 			free(str);
 			metadata = 1;
+			roger_str(0, NULL);
 		}
-
 	}
+/*
 	else if ((sig == SIGINT || sig == SIGQUIT) && !metadata)
 		free(str);
+*/
 }
 
 int     main()
 {
 	struct sigaction	act;
-	int					i;
 //	Uncomment if signals need to be blocked during handling
 //	sigset_t			blocked;
 //	sigemptyset(&blocked);
@@ -91,23 +98,7 @@ int     main()
 		ft_putstr_fd("Error.\n", 2);
 		return(42);
 	}
-	i = sizeof(size_t) * 8;
 	while(1)
 		pause();
 	return (0);
-/*
-	while (1)
-	{
-		i = 0;
-		c = 0;
-		while(i < 8)
-		{
-			pause();
-			c = c | global;
-			c = c << 1;
-			++i;
-		}
-		write(1, &c, 1);
-	}
-*/
 }

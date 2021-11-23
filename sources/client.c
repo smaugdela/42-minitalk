@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 14:46:14 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/22 19:27:06 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/11/23 11:44:09 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static t_bool error_check(int argc, char **argv)
 		ft_putstr_fd("Error: usage: ./client <PID> <string to transmit>\n", 2);
 		return (FALSE);
 	}
-	if (ft_strlen(argv[1]) > ft_nblen(MAX_PID) || ft_atoi(argv[1]) < 0
+	if (ft_strlen(argv[1]) > ft_nblen(MAX_PID) || ft_atoi(argv[1]) <= 0
 		|| ft_atoi(argv[1]) > MAX_PID)
 	{
 		ft_putstr_fd("Error: PID not valid.\n", 2);
@@ -30,10 +30,10 @@ static t_bool error_check(int argc, char **argv)
 		ft_putstr_fd("Error: PID not valid, no process found for that ID.\n", 2);
 		return (FALSE);
 	}
-	ft_printf("frquency = %d\n", TRANSMISSION_FREQ);
+	ft_printf("frequency = %d\n", TRANSMISSION_FREQ);
 	if (TRANSMISSION_FREQ < 100 || TRANSMISSION_FREQ > 1000000)
 	{
-		ft_putstr_fd("Error: transmission freq should be between 1 kHz and 1MHz.\n", 2);
+		ft_putstr_fd("Error: transmission freq should be between 100 Hz and 1MHz.\n", 2);
 		return (FALSE);
 	}
 	return (TRUE);

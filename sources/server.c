@@ -12,28 +12,72 @@
 
 #include "minitalk.h"
 
-t_hermes	global;
-
-static void	my_sig(int param, siginfo_t *info, void *context)
+static int	roger_strlen(int sig, size_t *s_len)
 {
-	(void)context;
-	if (param == SIGUSR1)
-		global.signal = 0;
-	else if (param == SIGUSR2)
-		global.signal = 1;
-	else if (param == SIGINT || param == SIGQUIT)
+	static int	i = sizeof(*s_len) * 8;
+
+	while(i--)
 	{
-		// free correctement?
-		exit(0);
+		if (sig == SIGUSR2)
+			*s_len = *s_len | (1 << ((sizeof(*s_len) * 8) - i - 1));
 	}
-	global.client_pid = info->si_pid;
+	return (i);
+}
+
+static void	roger_str(int sig, char *str)
+{
+	static int		i = 8;
+	static int8_t	c = 0;
+
+	if (i--)
+	{
+
+	}
+	else
+	{
+		str[?] = (char)c;
+		i = 8;
+		c = 0;
+	}
+}
+
+static void	my_sig(int sig, siginfo_t *info, void *context)
+{
+	static size_t	s_len = 0;
+	static t_bool	metadata = 1;
+	char			*str;
+
+	(void)context;
+	if (sig == SIGUSR1 || sig == SIGUSR2)
+	{
+		if (metadata && roger_strlen(sig, &s_len) == 0)
+		{
+			ft_printf("strlen = %d\n", s_len);	//should malloc the string here.
+			str = malloc((s_len + 1) * sizeof(char));
+			if (str == NULL)
+				exit(42);
+			str[s_len] = '\0';
+			metadata = 0;
+			kill(info->si_pid, SIGUSR2);
+		}
+		else if (!metadata && s_len--)
+			roger_str(sig, str);
+		else
+		{
+			ft_putstr_fd(str, 1);
+			free(str);
+			metadata = 1;
+		}
+
+	}
+	else if ((sig == SIGINT || sig == SIGQUIT) && !metadata)
+		free(str);
 }
 
 int     main()
 {
 	struct sigaction	act;
 	int					i;
-	int					str_len;
 //	Uncomment if signals need to be blocked during handling
 //	sigset_t			blocked;
 //	sigemptyset(&blocked);
@@ -47,26 +91,9 @@ int     main()
 		ft_putstr_fd("Error.\n", 2);
 		return(42);
 	}
-	str_len = 0;
-	i = sizeof(str_len) * 8;
-	while(i--)
-	{
+	i = sizeof(size_t) * 8;
+	while(1)
 		pause();
-		if (global.signal == 1)
-			str_len = str_len | (1 << ((sizeof(str_len) * 8) - i - 1));
-	}
-	ft_printf("strlen = %d\n", str_len);	//should malloc the string here.
-	sleep(5);
-	if (global.signal == 1)
-	{
-		ft_printf("Messij received from client.\nResponding OK signal to client shortly, at pid %d\n", global.client_pid);
-		sleep(3);
-		kill(global.client_pid, SIGUSR2);
-	}
-	else
-	{
-		ft_printf("No signal received.\n");
-	}
 	return (0);
 /*
 	while (1)

@@ -6,7 +6,7 @@
 #    By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/05 12:42:57 by smagdela          #+#    #+#              #
-#    Updated: 2021/11/22 19:28:26 by smagdela         ###   ########.fr        #
+#    Updated: 2021/11/23 11:25:16 by smagdela         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,9 +43,9 @@ CC	=	clang
 CFLAGS	=	-Wall -Wextra -Werror
 LIBSMK	=	make -C
 
-#################
-#	FANCY STUFF	#
-#################
+##################
+#	FANCY STUFF	 #
+##################
 
 GREEN	=	\033[0;32m
 RED		=	\033[1;31m
@@ -61,25 +61,13 @@ NUKE	=	"\n${RED}     _.-^^---....,,--       \n _--                  --_  \n<    
 all:	${NAME}
 
 ${NAME}:	${LIBS} ${OBJS}
-	${CC} ${CFLAG} ${filter-out ${OBJD}${SERVER}.o,${OBJS}} ${LIBS} -o ${CLIENT}
-	${CC} ${CFLAG} ${filter-out ${OBJD}${CLIENT}.o,${OBJS}} ${LIBS} -o ${SERVER}
+	${CC} ${CFLAGS} ${filter-out ${OBJD}${SERVER}.o,${OBJS}} ${LIBS} -o ${CLIENT}
+	${CC} ${CFLAGS} ${filter-out ${OBJD}${CLIENT}.o,${OBJS}} ${LIBS} -o ${SERVER}
 	@echo ${WHALE}
-
-fast:	${LIBS} ${OBJS}
-	${CC} ${CFLAG} ${filter-out ${OBJD}${SERVER}.o,${OBJS}} ${LIBS} -DTRANSMISSION_FREQ=1000000 -o ${CLIENT}
-	${CC} ${CFLAG} ${filter-out ${OBJD}${CLIENT}.o,${OBJS}} ${LIBS} -o ${SERVER}
-	@echo ${WHALE}
-	@echo "${RED}\nWARNING: You are using a very high frequency to communicate between programs, data could be lost in the process if the computer isn't fast enough. Please use it wisely."
-
-slow:	${LIBS} ${OBJS}
-	${CC} ${CFLAG} ${filter-out ${OBJD}${SERVER}.o,${OBJS}} ${LIBS} -DTRANSMISSION_FREQ=100 -o ${CLIENT}
-	${CC} ${CFLAG} ${filter-out ${OBJD}${CLIENT}.o,${OBJS}} ${LIBS} -o ${SERVER}
-	@echo ${WHALE}
-	@echo "${RED}\nWARNING: You are using a very low frequency to communicate between programs, thus not corresponding to subject's requirements. Please do not correct using this mode."
 
 ${OBJD}%.o:	${SRCD}%.c
 	mkdir -p ${OBJD}
-	${CC} -c -o $@ ${CFLAGS} -I${INCD} -I${LIBFTD} -I${LIBPRINTFD} $<
+	${CC} ${CFLAGS} -c -o $@ -I${INCD} -I${LIBFTD} -I${LIBPRINTFD} $<
 
 ${LIBS}:
 	${LIBSMK} ${LIBFTD} bonus

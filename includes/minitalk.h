@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 14:55:02 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/23 15:37:53 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/11/24 12:46:05 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@
 # include "libft.h"
 # include <signal.h>
 
-# define MAX_PID 99999  /*apparently for MacOS, or 32768 for 32 bits linux, or 4194304 for 64 bits.*/
+# define MAX_PID 4194304  /*apparently 99999 for MacOS, or 32768 for 32 bits linux, or 4194304 for 64 bits.*/
 # define FALSE 0
 # define TRUE 1
 
 # ifndef TRANSMISSION_FREQ
-#  define TRANSMISSION_FREQ 100000
+#  define TRANSMISSION_FREQ 1000
 # endif
 
 size_t	ft_nblen(int64_t nb);

@@ -26,13 +26,22 @@ static int	roger_strlen(int sig, size_t *s_len)
 
 static size_t	roger_str(int sig, char *str)
 {
-	static int8_t	c = 0;
+	static char		c = 0;
 	static int		i = sizeof(c) * 8;
 	static size_t	index_c = 0;
 
-	ft_printf("\n\nje passe dans roger_str...\n\n");
+	ft_printf("Je passe dans roger_str...\n");
 	if (i--)
-		c = c | (1 << ((sizeof(c) * 8) - i - 1));
+	{
+		ft_printf("Je capte un bit...\n");
+		if (sig == SIGUSR2)
+		{
+			c = c | (1 << ((sizeof(c) * 8) - i - 1));
+			ft_printf("Je capte un bit 1 que j'ecris a l'index %d.\n", i);
+		}
+		else
+			ft_printf("Je capte un bit 0 que j'ecris a l'index %d.\n", i);
+	}
 	else if (sig == 0 && str == NULL)
 	{
 		i = 8;
@@ -41,8 +50,8 @@ static size_t	roger_str(int sig, char *str)
 	}
 	else
 	{
+		ft_printf("J'ecris le char %c a l'index %d dans str.\n", c, index_c);
 		str[index_c] = (char)c;
-		ft_printf("%s", str);
 		i = 8;
 		c = 0;
 		++index_c;
@@ -62,20 +71,24 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 	{
 		if (metadata && roger_strlen(sig, &s_len) == 0)
 		{
-			ft_printf("strlen = %d\n", s_len);
 			str = malloc((s_len + 1) * sizeof(char));
+			ft_printf("Je malloc une strlen = %d\n", s_len);
 			if (str == NULL)
 				exit(42);
 			str[s_len] = '\0';
 			metadata = FALSE;
+			usleep(10000000 / TRANSMISSION_FREQ);
+			ft_putstr_fd("Metadata received and ready! Synchronizing with client...\n", 1);
 			kill(info->si_pid, SIGUSR2);
+			return ;
 		}
-		if (!metadata && roger_str(sig, str) == s_len)
+		else if (!metadata && roger_str(sig, str) == s_len)
 		{
 			ft_putstr_fd(str, 1);
 			free(str);
 			metadata = TRUE;
 			roger_str(0, NULL);
+			return ;
 		}
 	}
 /*

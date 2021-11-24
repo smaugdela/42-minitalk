@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 14:46:14 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/23 16:04:02 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/11/24 11:50:04 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,7 @@ static t_bool error_check(int argc, char **argv)
 static void client_signal_handler(int param)
 {
 	if (param == SIGUSR2)
-	{
-		ft_printf("Messij received from server! Now transmitting string...\n");
-		exit(0);
-	}
+		ft_printf("Messij received from server!\n");
 }
 
 int	main(int argc, char **argv)
@@ -75,9 +72,12 @@ int	main(int argc, char **argv)
 		else
 			kill(pid, SIGUSR1);
 		str_len = str_len >> 1;
-		usleep(1000000 / TRANSMISSION_FREQ);
+		if (i)
+			usleep(1000000 / TRANSMISSION_FREQ);
 	}
+	ft_putstr_fd("Metadata sent! Waiting for server to synchronize...\n", 1);
 	pause();
+	ft_printf("Now transmitting string...\n");
 	while(str_len < ft_strlen(argv[2]))
 	{
 		c = argv[2][str_len];

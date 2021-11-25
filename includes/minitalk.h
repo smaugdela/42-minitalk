@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 14:55:02 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/24 12:46:05 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/11/25 14:47:54 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # define TRUE 1
 
 # ifndef TRANSMISSION_FREQ
-#  define TRANSMISSION_FREQ 1000
+#  define TRANSMISSION_FREQ 500
 # endif
 
 size_t	ft_nblen(int64_t nb);

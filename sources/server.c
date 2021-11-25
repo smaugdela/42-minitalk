@@ -16,7 +16,9 @@ static int	roger_strlen(int sig, size_t *s_len)
 {
 	static int	i = sizeof(*s_len) * 8;
 
-	if (i--)
+	if (sig == 0 && s_len == NULL)
+		i = sizeof(*s_len) * 8;
+	else if (i--)
 	{
 		if (sig == SIGUSR2)
 			*s_len = *s_len | (1 << ((sizeof(*s_len) * 8) - i - 1));
@@ -30,19 +32,7 @@ static size_t	roger_str(int sig, char *str)
 	static int		i = sizeof(c) * 8;
 	static size_t	index_c = 0;
 
-	ft_printf("Je passe dans roger_str...\n");
-	if (i--)
-	{
-		ft_printf("Je capte un bit...\n");
-		if (sig == SIGUSR2)
-		{
-			c = c | (1 << ((sizeof(c) * 8) - i - 1));
-			ft_printf("Je capte un bit 1 que j'ecris a l'index %d.\n", i);
-		}
-		else
-			ft_printf("Je capte un bit 0 que j'ecris a l'index %d.\n", i);
-	}
-	else if (sig == 0 && str == NULL)
+	if (sig == 0 && str == NULL)
 	{
 		i = 8;
 		c = 0;
@@ -50,23 +40,35 @@ static size_t	roger_str(int sig, char *str)
 	}
 	else
 	{
-		ft_printf("J'ecris le char %c a l'index %d dans str.\n", c, index_c);
-		str[index_c] = (char)c;
-		i = 8;
-		c = 0;
-		++index_c;
+		if (!i--)
+		{
+//			ft_printf("J'ecris le char %c a l'index %d dans str.\n", c, index_c);
+			str[index_c] = (char)c;
+			i = 7;
+			c = 0;
+			++index_c;
+		}
+		if (sig == SIGUSR2)
+		{
+			c = c | (1 << ((sizeof(c) * 8) - i - 1));
+			ft_printf("Je capte un bit 1 que j'ecris a l'index %d.\n", i);
+		}
+		else if (sig == SIGUSR1)
+			ft_printf("Je capte un bit 0 que j'ecris a l'index %d.\n", i);
 	}
-	return (index_c);
+	if (i)
+		return (index_c);
+	else
+		return (index_c + 1);
 }
 
 static void	my_sig(int sig, siginfo_t *info, void *context)
 {
 	static size_t	s_len = 0;
 	static t_bool	metadata = TRUE;
-	char			*str;
+	static char			*str = NULL;
 
 	(void)context;
-	str = NULL;
 	if (sig == SIGUSR1 || sig == SIGUSR2)
 	{
 		if (metadata && roger_strlen(sig, &s_len) == 0)
@@ -85,8 +87,11 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 		else if (!metadata && roger_str(sig, str) == s_len)
 		{
 			ft_putstr_fd(str, 1);
+			s_len = 0;
 			free(str);
+			str = NULL;
 			metadata = TRUE;
+			roger_strlen(0, NULL);
 			roger_str(0, NULL);
 			return ;
 		}

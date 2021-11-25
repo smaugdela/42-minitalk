@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/12 15:21:28 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/23 09:06:08 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/11/25 17:37:52 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 # include <stdarg.h>
 # include <stdint.h>
 
-# if defined(__linux__)
+# if defined __linux__
 #  define OSNUL "(nil)"
-# elif __APPLE__
+# elif defined __APPLE__
 #  define OSNUL "0x0"
 # endif
 

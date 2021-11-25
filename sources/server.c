@@ -37,24 +37,17 @@ static size_t	roger_str(int sig, char *str)
 		i = 8;
 		c = 0;
 		index_c = 0;
+		return (0);
 	}
-	else
+	--i;
+	if (sig == SIGUSR2)
+		c = c | (1 << ((sizeof(c) * 8) - i - 1));
+	if (!i)
 	{
-		if (!i--)
-		{
-//			ft_printf("J'ecris le char %c a l'index %d dans str.\n", c, index_c);
-			str[index_c] = (char)c;
-			i = 7;
-			c = 0;
-			++index_c;
-		}
-		if (sig == SIGUSR2)
-		{
-			c = c | (1 << ((sizeof(c) * 8) - i - 1));
-			ft_printf("Je capte un bit 1 que j'ecris a l'index %d.\n", i);
-		}
-		else if (sig == SIGUSR1)
-			ft_printf("Je capte un bit 0 que j'ecris a l'index %d.\n", i);
+		str[index_c] = c;
+		i = 8;
+		c = 0;
+		++index_c;
 	}
 	if (i)
 		return (index_c);
@@ -62,11 +55,22 @@ static size_t	roger_str(int sig, char *str)
 		return (index_c + 1);
 }
 
+static void	reset(size_t *s_len, t_bool *metadata, char *str)
+{
+	ft_putstr_fd(str, 1);
+	*s_len = 0;
+	free(str);
+	str = NULL;
+	*metadata = TRUE;
+	roger_strlen(0, NULL);
+	roger_str(0, NULL);
+}
+
 static void	my_sig(int sig, siginfo_t *info, void *context)
 {
 	static size_t	s_len = 0;
 	static t_bool	metadata = TRUE;
-	static char			*str = NULL;
+	static char		*str = NULL;
 
 	(void)context;
 	if (sig == SIGUSR1 || sig == SIGUSR2)
@@ -74,51 +78,39 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 		if (metadata && roger_strlen(sig, &s_len) == 0)
 		{
 			str = malloc((s_len + 1) * sizeof(char));
-			ft_printf("Je malloc une strlen = %d\n", s_len);
 			if (str == NULL)
 				exit(42);
 			str[s_len] = '\0';
 			metadata = FALSE;
 			usleep(10000000 / TRANSMISSION_FREQ);
-			ft_putstr_fd("Metadata received and ready! Synchronizing with client...\n", 1);
 			kill(info->si_pid, SIGUSR2);
 			return ;
 		}
 		else if (!metadata && roger_str(sig, str) == s_len)
-		{
-			ft_putstr_fd(str, 1);
-			s_len = 0;
-			free(str);
-			str = NULL;
-			metadata = TRUE;
-			roger_strlen(0, NULL);
-			roger_str(0, NULL);
-			return ;
-		}
+			reset(&s_len, &metadata, str);
 	}
-/*
-	else if ((sig == SIGINT || sig == SIGQUIT) && !metadata)
-		free(str);
-*/
 }
 
-int     main()
+/*
+	Uncomment if signals need to be blocked during handling
+	sigset_t			blocked;
+	sigemptyset(&blocked);
+	sigaddset(&blocked, SIGUSR2);
+*/
+int	main(void)
 {
 	struct sigaction	act;
-//	Uncomment if signals need to be blocked during handling
-//	sigset_t			blocked;
-//	sigemptyset(&blocked);
-//	sigaddset(&blocked, SIGUSR2);
 
 	act.sa_sigaction = my_sig;
 	act.sa_flags = SA_SIGINFO;
 	ft_printf("Server pid is: %d\n", getpid());
-	if (sigaction(SIGUSR1, &act, NULL) == -1 || sigaction(SIGUSR2, &act, NULL) == -1)
+	if (sigaction(SIGUSR1, &act, NULL) == -1
+		|| sigaction(SIGUSR2, &act, NULL) == -1)
 	{
 		ft_putstr_fd("Error.\n", 2);
-		return(42);
+		return (42);
 	}
-	while(1)
+	while (1)
 		pause();
 	return (0);
 }

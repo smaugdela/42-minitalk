@@ -34,7 +34,7 @@ static size_t	roger_str(int sig, char *str)
 
 	if (sig == 0 && str == NULL)
 	{
-		i = 8;
+		i = sizeof(c) * 8;
 		c = 0;
 		index_c = 0;
 		return (0);

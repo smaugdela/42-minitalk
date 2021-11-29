@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 14:55:02 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/25 17:57:37 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/11/29 16:50:43 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,13 @@ or 4194304 for 64 bits linux.*/
 
 # ifndef TRANSMISSION_FREQ
 #  if defined __linux__
-#   define TRANSMISSION_FREQ 10000	// 1000 < frequency < ?
+#   define TRANSMISSION_FREQ 800
+#   define MIN_FREQ 800
+#   define MAX_FREQ 900
 #  elif defined __APPLE__
-#   define TRANSMISSION_FREQ 150000	// 1000 < frequency < 150000
+#   define TRANSMISSION_FREQ 150000	// 10000 < frequency < 150000
+#   define MIN_FREQ 10000
+#   define MAX_FREQ 150000
 #  endif
 # endif
 /*Transmission frequency (in bits/s) is the maximum transfer rate value.

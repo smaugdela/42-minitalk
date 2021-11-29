@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 14:46:14 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/25 18:00:03 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/11/29 16:54:44 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static t_bool	error_check(int argc, char **argv)
 		ft_putstr_fd("Error: PID not valid, no process found for that ID.\n", 2);
 		return (FALSE);
 	}
-	if (TRANSMISSION_FREQ < 1000 || TRANSMISSION_FREQ > 150000)
+	if (TRANSMISSION_FREQ < MIN_FREQ || TRANSMISSION_FREQ > MAX_FREQ)
 	{
 		ft_putstr_fd("Error: transmission freq ", 2);
 		ft_putstr_fd("should be between 1kHz and 150kHz (kbits/sec).\n", 2);
@@ -100,6 +100,12 @@ int	main(int argc, char **argv)
 	{
 		ft_putstr_fd("Error.\n", 2);
 		return (42);
+	}
+	if (TRANSMISSION_FREQ < 8000)
+	{
+		ft_putstr_fd("\nWarning: transmission frequency very low (maybe ", 1);
+		ft_putstr_fd("because of linux?), please do not care about the sp", 1);
+		ft_putstr_fd("eed if you're correcting under these conditions.\n", 1);
 	}
 	pid = ft_atoi(argv[1]);
 	str_len = ft_strlen(argv[2]);

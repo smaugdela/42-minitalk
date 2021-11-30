@@ -12,27 +12,28 @@
 
 #include "minitalk.h"
 
-static int	roger_strlen(int sig, size_t *s_len)
+static int	roger_strlen(int sig, size_t *s_len, pid_t pid)
 {
 	static int	i = sizeof(*s_len) * 8;
 
-	if (sig == 0 && s_len == NULL)
+	if (sig == 0 && s_len == NULL && pid == -1)
 		i = sizeof(*s_len) * 8;
 	else if (i--)
 	{
 		if (sig == SIGUSR2)
 			*s_len = *s_len | (1 << ((sizeof(*s_len) * 8) - i - 1));
 	}
+	kill(pid, SIGUSR2);
 	return (i);
 }
 
-static size_t	roger_str(int sig, char *str)
+static size_t	roger_str(int sig, char *str, pid_t pid)
 {
 	static char		c = 0;
 	static int		i = sizeof(c) * 8;
 	static size_t	index_c = 0;
 
-	if (sig == 0 && str == NULL)
+	if (sig == 0 && str == NULL && pid == -1)
 	{
 		i = sizeof(c) * 8;
 		c = 0;
@@ -62,8 +63,8 @@ static void	reset(size_t *s_len, t_bool *metadata, char *str)
 	free(str);
 	str = NULL;
 	*metadata = TRUE;
-	roger_strlen(0, NULL);
-	roger_str(0, NULL);
+	roger_strlen(0, NULL, -1);
+	roger_str(0, NULL, -1);
 }
 
 static void	my_sig(int sig, siginfo_t *info, void *context)
@@ -75,19 +76,19 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 	(void)context;
 	if (sig == SIGUSR1 || sig == SIGUSR2)
 	{
-		if (metadata && roger_strlen(sig, &s_len) == 0)
+		if (metadata && roger_strlen(sig, &s_len, info->si_pid) == 0)
 		{
 			str = malloc((s_len + 1) * sizeof(char));
 			if (str == NULL)
 				exit(42);
 			str[s_len] = '\0';
 			metadata = FALSE;
-			usleep(10000000 / TRANSMISSION_FREQ);
 			kill(info->si_pid, SIGUSR2);
 			return ;
 		}
-		else if (!metadata && roger_str(sig, str) == s_len)
+		else if (!metadata && roger_str(sig, str, info->si_pid) == s_len)
 			reset(&s_len, &metadata, str);
+		kill(info->si_pid, SIGUSR2);
 	}
 }
 

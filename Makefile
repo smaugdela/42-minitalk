@@ -6,7 +6,7 @@
 #    By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/05 12:42:57 by smagdela          #+#    #+#              #
-#    Updated: 2021/11/25 16:28:41 by smagdela         ###   ########.fr        #
+#    Updated: 2021/11/30 10:56:11 by smagdela         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,6 @@
 NAME	=	minitalk
 CLIENT	=	client
 SERVER	=	server
-BONUS_NAME	=
 
 LIBSD	=	libs/
 LIBFTD	=	${addprefix ${LIBSD},libft/}
@@ -74,7 +73,8 @@ ${LIBS}:
 	${LIBSMK} ${LIBPRINTFD} bonus
 
 bonus: ${LIBS} ${OBJS} ${BONUSO}
-	${CC} ${CFLAG} ${BONUSO} ${LIBS} -o ${BONUS_NAME}
+	${CC} ${CFLAGS} ${filter-out ${BONUSOD}${SERVER}_bonus.o,${BONUSO}} ${LIBS} -o ${CLIENT}_bonus
+	${CC} ${CFLAGS} ${filter-out ${BONUSOD}${CLIENT}_bonus.o,${BONUSO}} ${LIBS} -o ${SERVER}_bonus
 	@echo ${WHALE}
 
 ${BONUSOD}%.o:	${BONUSSD}%.c

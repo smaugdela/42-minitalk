@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 14:46:14 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/01 12:43:53 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/01 16:22:31 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,39 +35,38 @@ static t_bool	error_check(int argc, char **argv)
 
 static void	client_signal_handler(int sig, siginfo_t *info, void *context)
 {
-	(void)context;
-	(void)info;
 	if (sig == SIGUSR2)
 	{
-		ft_putstr_fd("OK, going on.", 1);
+		return ;
 	}
+	(void)context;
+	(void)info;
 }
 
-static void	send_strlen(pid_t pid, size_t str_len, struct sigaction act)
+static void	send_strlen(pid_t pid, size_t s_len, struct sigaction act)
 {
 	int	i;
 
 	if (sigaction(SIGUSR2, &act, NULL) == -1)
 	{
 		ft_putstr_fd("Error.\n", 2);
-		exit(42);
+		exit (42);
 	}
-	i = sizeof(str_len) * 8;
-	sleep(1);
+	i = sizeof(s_len) * 8;
 	while (i--)
 	{
-		if (str_len & 1)
+		usleep(DELAY);
+		if (s_len & 1)
 			kill(pid, SIGUSR2);
 		else
 			kill(pid, SIGUSR1);
-		if (i)
-			pause();
-		ft_putstr_fd("Bit sent.\n", 1);
-		str_len = str_len >> 1;
+		pause();
+		s_len = s_len >> 1;
 	}
+	return ;
 }
 
-static void	send_str(pid_t pid, char *str, size_t str_len, struct sigaction act)
+static void	send_str(pid_t pid, char *str, size_t s_len, struct sigaction act)
 {
 	int		i;
 	char	c;
@@ -76,15 +75,16 @@ static void	send_str(pid_t pid, char *str, size_t str_len, struct sigaction act)
 	if (sigaction(SIGUSR2, &act, NULL) == -1)
 	{
 		ft_putstr_fd("Error.\n", 2);
-		exit(42);
+		exit (42);
 	}
 	index = 0;
-	while (index < str_len)
+	while (index < s_len)
 	{
 		c = str[index];
 		i = sizeof(c) * 8;
 		while (i--)
 		{
+			usleep(DELAY);
 			if (c & 1)
 				kill(pid, SIGUSR2);
 			else
@@ -93,8 +93,8 @@ static void	send_str(pid_t pid, char *str, size_t str_len, struct sigaction act)
 			c = c >> 1;
 		}
 		++index;
-		ft_putstr_fd("Character sent.", 1);
 	}
+	return ;
 }
 
 int	main(int argc, char **argv)
@@ -102,9 +102,14 @@ int	main(int argc, char **argv)
 	size_t				str_len;
 	int					pid;
 	struct sigaction	act;
+	sigset_t			blocked;
 
+	sigemptyset(&blocked);
+	sigaddset(&blocked, SIGUSR2);
+	act.sa_mask = blocked;
 	if (error_check(argc, argv) == FALSE)
 		return (42);
+	act.sa_flags = SA_SIGINFO;
 	act.sa_sigaction = client_signal_handler;
 	if (sigaction(SIGUSR2, &act, NULL) == -1)
 	{
@@ -113,10 +118,7 @@ int	main(int argc, char **argv)
 	}
 	pid = ft_atoi(argv[1]);
 	str_len = ft_strlen(argv[2]);
-	ft_printf("str_len = %d\n", str_len);
 	send_strlen(pid, str_len, act);
-	ft_printf("str_len sent! Now waiting for server to respond...\n");
-	pause();
 	send_str(pid, argv[2], str_len, act);
 	return (0);
 }

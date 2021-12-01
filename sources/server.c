@@ -22,7 +22,7 @@ static int	roger_strlen(int sig, size_t *s_len)
 	else if (i--)
 	{
 		if (sig == SIGUSR2)
-			*s_len = *s_len | (1 << ((max) - i - 1));
+			*s_len = *s_len | (1 << (max - i - 1));
 	}
 	return (i);
 }
@@ -43,13 +43,12 @@ static size_t	roger_str(int sig, char *str)
 	}
 	--i;
 	if (sig == SIGUSR2)
-		c = c | (1 << ((max) - i - 1));
+		c = c | (1 << (max - i - 1));
 	if (!i)
 	{
-		str[index_c] = c;
+		str[index_c++] = c;
 		i = 8;
 		c = 0;
-		++index_c;
 	}
 	if (i)
 		return (index_c);

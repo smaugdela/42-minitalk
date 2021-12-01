@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 11:33:44 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/30 14:13:19 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/01 18:08:13 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 t_client_info	*search_pid(t_client_info *clients, pid_t pid)
 {
-	t_client_info   *client;
+	t_client_info	*client;
 
 	if (clients == NULL)
 		return (NULL);

@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 14:46:14 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/01 16:22:31 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/01 18:06:40 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,15 +70,15 @@ static void	send_str(pid_t pid, char *str, size_t s_len, struct sigaction act)
 {
 	int		i;
 	char	c;
-	size_t	index;
+	int		index;
 
 	if (sigaction(SIGUSR2, &act, NULL) == -1)
 	{
 		ft_putstr_fd("Error.\n", 2);
 		exit (42);
 	}
-	index = 0;
-	while (index < s_len)
+	index = -1;
+	while (++index < s_len)
 	{
 		c = str[index];
 		i = sizeof(c) * 8;
@@ -92,9 +92,7 @@ static void	send_str(pid_t pid, char *str, size_t s_len, struct sigaction act)
 			pause();
 			c = c >> 1;
 		}
-		++index;
 	}
-	return ;
 }
 
 int	main(int argc, char **argv)

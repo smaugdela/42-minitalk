@@ -6,29 +6,28 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 10:59:48 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/30 12:30:58 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/01 18:10:29 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk_bonus.h"
 
-static int	roger_strlen(int sig, t_client_info *client)
+static int	roger_strlen(int sig, t_client_info *c)
 {
-	client->i = sizeof(client->s_len) * 8;
-	if (sig == 0 && client->s_len == NULL)
-		client->i = sizeof(client->s_len) * 8;
-	else if (client->i--)
+	c->i = sizeof(c->s_len) * 8;
+	if (sig == 0 && c->s_len == NULL)
+		c->i = sizeof(c->s_len) * 8;
+	else if (c->i--)
 	{
 		if (sig == SIGUSR2)
-			client->s_len = client->s_len | (1 << ((sizeof(client->s_len) * 8) - client->i - 1));
+			c->s_len = c->s_len | (1 << ((sizeof(c->s_len) * 8) - c->i - 1));
 	}
-	return (client->i);
+	return (c->i);
 }
 
 static size_t	roger_str(int sig, t_client_info *client)
 {
 	client->i = sizeof(client->c) * 8;
-
 	if (sig == 0 && client == NULL)
 	{
 		i = sizeof(c) * 8;
@@ -67,7 +66,7 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 	t_client_info			*client;
 
 	client = search_pid(clients, info->si_pid);
-	if (client == NULL)	
+	if (client == NULL)
 		client = add_client(clients, info->si_pid);
 	(void)context;
 	if (sig == SIGUSR1 || sig == SIGUSR2)
@@ -83,7 +82,7 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 			return ;
 		}
 		else if (!client->metadata
-				&& roger_str(sig, client->str) == client->s_len)
+			&& roger_str(sig, client->str) == client->s_len)
 			reset(client, clients);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 14:46:14 by smagdela          #+#    #+#             */
-/*   Updated: 2021/11/30 15:59:48 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/01 12:43:53 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,13 @@ static t_bool	error_check(int argc, char **argv)
 	return (TRUE);
 }
 
-static void	client_signal_handler(int param)
+static void	client_signal_handler(int sig, siginfo_t *info, void *context)
 {
-	if (param == SIGUSR2)
+	(void)context;
+	(void)info;
+	if (sig == SIGUSR2)
 	{
+		ft_putstr_fd("OK, going on.", 1);
 	}
 }
 
@@ -50,6 +53,7 @@ static void	send_strlen(pid_t pid, size_t str_len, struct sigaction act)
 		exit(42);
 	}
 	i = sizeof(str_len) * 8;
+	sleep(1);
 	while (i--)
 	{
 		if (str_len & 1)
@@ -58,6 +62,7 @@ static void	send_strlen(pid_t pid, size_t str_len, struct sigaction act)
 			kill(pid, SIGUSR1);
 		if (i)
 			pause();
+		ft_putstr_fd("Bit sent.\n", 1);
 		str_len = str_len >> 1;
 	}
 }
@@ -88,6 +93,7 @@ static void	send_str(pid_t pid, char *str, size_t str_len, struct sigaction act)
 			c = c >> 1;
 		}
 		++index;
+		ft_putstr_fd("Character sent.", 1);
 	}
 }
 
@@ -99,7 +105,7 @@ int	main(int argc, char **argv)
 
 	if (error_check(argc, argv) == FALSE)
 		return (42);
-	act.sa_handler = client_signal_handler;
+	act.sa_sigaction = client_signal_handler;
 	if (sigaction(SIGUSR2, &act, NULL) == -1)
 	{
 		ft_putstr_fd("Error.\n", 2);

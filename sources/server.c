@@ -23,7 +23,7 @@ static int	roger_strlen(int sig, size_t *s_len, pid_t pid)
 		if (sig == SIGUSR2)
 			*s_len = *s_len | (1 << ((sizeof(*s_len) * 8) - i - 1));
 	}
-	kill(pid, SIGUSR2);
+	ft_putstr_fd("Bit received.\n", 1);
 	return (i);
 }
 
@@ -83,11 +83,13 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 				exit(42);
 			str[s_len] = '\0';
 			metadata = FALSE;
+			ft_printf("str_len = %d\nSending client OK signal.\n", s_len);
 			kill(info->si_pid, SIGUSR2);
 			return ;
 		}
 		else if (!metadata && roger_str(sig, str, info->si_pid) == s_len)
 			reset(&s_len, &metadata, str);
+		sleep(1);
 		kill(info->si_pid, SIGUSR2);
 	}
 }

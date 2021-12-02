@@ -6,7 +6,7 @@
 #    By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/05 12:42:57 by smagdela          #+#    #+#              #
-#    Updated: 2021/11/30 10:56:11 by smagdela         ###   ########.fr        #
+#    Updated: 2021/12/02 16:35:53 by smagdela         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,14 +25,14 @@ INCD	=	includes/
 SRCD	=	sources/
 OBJD	=	objects/
 BONUSD	=	bonus/
-BONUSSD	:=	${BONUSD}sources/
-BONUSOD	:=	${BONUSD}objects/
+BONUSSD	=	${BONUSD}sources/
+BONUSOD	=	${BONUSD}objects/
 
 LIBFT	:=	${addprefix ${LIBFTD},libft.a}
 FTPRINTF:=	${addprefix ${LIBPRINTFD},libftprintf.a}
 LIBS	:=	${LIBFT} ${FTPRINTF}
 SRCS	=	server.c client.c ft_utils.c
-BONUS 	=	
+BONUS 	=	server_bonus.c client_bonus.c ft_utils_bonus.c ft_utils_2_bonus.c
 OBJS	:=	${addprefix ${OBJD},${SRCS:.c=.o}}
 SRCS	:=	${addprefix ${SRCD},${SRCS}}
 BONUSO	:=	${addprefix ${BONUSOD},${BONUS:.c=.o}}
@@ -79,7 +79,7 @@ bonus: ${LIBS} ${OBJS} ${BONUSO}
 
 ${BONUSOD}%.o:	${BONUSSD}%.c
 	mkdir -p ${BONUSOD}
-	${CC} -c -o $@ ${CFLAGS} -I${INCD} $<
+	${CC} ${CFLAGS} -c -o $@ -I${INCD} -I${LIBFTD} -I${LIBPRINTFD} $<
 
 clean:
 	-rm -rf ${OBJD} ${BONUSOD}
@@ -87,7 +87,7 @@ clean:
 	${LIBSMK} ${LIBPRINTFD} clean
 
 fclean:	clean
-	-rm ${CLIENT} ${SERVER} ${BONUS_NAME}
+	-rm ${CLIENT} ${SERVER} ${CLIENT}_bonus ${SERVER}_bonus
 	${LIBSMK} ${LIBFTD} fclean
 	${LIBSMK} ${LIBPRINTFD} fclean
 	@echo ${NUKE}

@@ -6,32 +6,11 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 10:59:51 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/01 18:07:21 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/02 16:39:28 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk_bonus.h"
-
-static t_bool	error_check(int argc, char **argv)
-{
-	if (argc != 3)
-	{
-		ft_putstr_fd("Error: usage: ./client <PID> <string to transmit>\n", 2);
-		return (FALSE);
-	}
-	if (ft_strlen(argv[1]) > ft_nblen(MAX_PID) || ft_atoi(argv[1]) <= 0
-		|| ft_atoi(argv[1]) > MAX_PID)
-	{
-		ft_putstr_fd("Error: PID not valid.\n", 2);
-		return (FALSE);
-	}
-	if (kill(ft_atoi(argv[1]), 0) == -1)
-	{
-		ft_putstr_fd("Error: PID not valid, no process found for that ID.\n", 2);
-		return (FALSE);
-	}
-	return (TRUE);
-}
 
 static void	client_signal_handler(int param)
 {
@@ -47,37 +26,37 @@ static void	send_strlen(pid_t pid, size_t str_len)
 	i = sizeof(str_len) * 8;
 	while (i--)
 	{
+		usleep(DELAY);
 		if (str_len & 1)
 			kill(pid, SIGUSR2);
 		else
 			kill(pid, SIGUSR1);
+		pause();
 		str_len = str_len >> 1;
-		if (i)
-			usleep(1000000 / TRANSMISSION_FREQ);
 	}
 }
 
-static void	send_str(pid_t pid, char *str, size_t str_len)
+static void	send_str(pid_t pid, char32_t *str, int str_len)
 {
 	int		i;
-	char	c;
-	size_t	index;
+	char32_t	c;
+	int	index;
 
-	index = 0;
-	while (index < str_len)
+	index = -1;
+	while (++index < str_len)
 	{
 		c = str[index];
 		i = sizeof(c) * 8;
 		while (i--)
 		{
+			usleep(DELAY);
 			if (c & 1)
 				kill(pid, SIGUSR2);
 			else
 				kill(pid, SIGUSR1);
+			pause();
 			c = c >> 1;
-			usleep(1000000 / TRANSMISSION_FREQ);
 		}
-		++index;
 	}
 }
 
@@ -96,9 +75,8 @@ int	main(int argc, char **argv)
 		return (42);
 	}
 	pid = ft_atoi(argv[1]);
-	str_len = ft_strlen(argv[2]);
+	str_len = ft_strlen_unic((char32_t *)argv[2]);
 	send_strlen(pid, str_len);
-	pause();
-	send_str(pid, argv[2], str_len);
+	send_str(pid, (char32_t *)argv[2], str_len);
 	return (0);
 }

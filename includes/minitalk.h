@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 14:55:02 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/01 17:57:17 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/02 16:39:34 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@
 or 32768 for 32 bits linux, 
 or 4194304 for 64 bits linux.*/
 
-# define DELAY 60 // in microseconds (should be < 70 us).
+# define DELAY 5 // in microseconds (should be < 70 µs, around 60 µs for linux at 42).
 
-size_t	ft_nblen(int64_t nb);
+t_bool	error_check(int argc, char **argv);
 
 #endif
 

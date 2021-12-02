@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 10:59:48 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/01 18:10:29 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/02 16:39:41 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,46 +14,46 @@
 
 static int	roger_strlen(int sig, t_client_info *c)
 {
-	c->i = sizeof(c->s_len) * 8;
-	if (sig == 0 && c->s_len == NULL)
-		c->i = sizeof(c->s_len) * 8;
+	c->i = c->max_str;
+	if (sig == 0 && c == NULL)
+		c->i = c->max_str;
 	else if (c->i--)
 	{
 		if (sig == SIGUSR2)
-			c->s_len = c->s_len | (1 << ((sizeof(c->s_len) * 8) - c->i - 1));
+			c->s_len = c->s_len | (1 << ((c->max_str) - c->i - 1));
 	}
 	return (c->i);
 }
 
-static size_t	roger_str(int sig, t_client_info *client)
+static size_t	roger_str(int sig, t_client_info *c)
 {
-	client->i = sizeof(client->c) * 8;
-	if (sig == 0 && client == NULL)
+	c->i = c->max_c;
+	if (sig == 0 && c == NULL)
 	{
-		i = sizeof(c) * 8;
-		c = 0;
-		index_c = 0;
+		c->i = c->max_c;
+		c->c = 0;
+		c->index_c = 0;
 		return (0);
 	}
-	--i;
+	--(c->i);
 	if (sig == SIGUSR2)
-		c = c | (1 << ((sizeof(c) * 8) - i - 1));
-	if (!i)
+		c->c = c->c | (1 << ((c->max_c) - c->i - 1));
+	if (!c->i)
 	{
-		str[index_c] = c;
-		i = 8;
-		c = 0;
-		++index_c;
+		c->str[c->index_c] = c->c;
+		c->i = 8;
+		c->c = 0;
+		++c->index_c;
 	}
-	if (i)
-		return (index_c);
+	if (c->i)
+		return (c->index_c);
 	else
-		return (index_c + 1);
+		return (c->index_c + 1);
 }
 
 static void	reset(t_client_info *client, t_client_info *clients)
 {
-	ft_putstr_fd(client->str, 1);
+	ft_putstr_unic_fd(client->str, 1);
 	free(client->str);
 	del_client(client, clients);
 	roger_strlen(0, NULL);
@@ -71,7 +71,7 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 	(void)context;
 	if (sig == SIGUSR1 || sig == SIGUSR2)
 	{
-		if (client->metadata && roger_strlen(sig, &client->s_len) == 0)
+		if (client->metadata && roger_strlen(sig, client) == 0)
 		{
 			client->str = malloc((client->s_len + 1) * sizeof(char));
 			if (client->str == NULL)
@@ -82,7 +82,7 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 			return ;
 		}
 		else if (!client->metadata
-			&& roger_str(sig, client->str) == client->s_len)
+			&& roger_str(sig, client) == client->s_len)
 			reset(client, clients);
 	}
 }

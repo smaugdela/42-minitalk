@@ -6,12 +6,12 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 11:33:44 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/06 11:25:09 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/06 12:04:49 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk_bonus.h"
-
+/*
 t_client_info	*search_pid(t_client_info *clients, pid_t pid)
 {
 	t_client_info	*client;
@@ -100,3 +100,4 @@ size_t	ft_strlen_unic(char32_t *str)
 	}
 	return (i);
 }
+*/

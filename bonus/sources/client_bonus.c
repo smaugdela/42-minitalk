@@ -6,20 +6,23 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 10:59:51 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/06 11:37:14 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/06 12:03:58 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk_bonus.h"
 
-static void	client_signal_handler(int param)
+static void	client_signal_handler(int sig, siginfo_t *info, void *context)
 {
-	if (param == SIGUSR2)
+	if (sig == SIGUSR2)
 	{
+		return ;
 	}
+	(void)context;
+	(void)info;
 }
 
-static void	send_strlen(pid_t pid, size_t str_len, struct sigaction act)
+static void	send_strlen(pid_t pid, size_t s_len, struct sigaction act)
 {
 	int	i;
 
@@ -28,24 +31,25 @@ static void	send_strlen(pid_t pid, size_t str_len, struct sigaction act)
 		ft_putstr_fd("Error.\n", 2);
 		exit (42);
 	}
-	i = sizeof(str_len) * 8;
+	i = sizeof(s_len) * 8;
 	while (i--)
 	{
 		usleep(DELAY);
-		if (str_len & 1)
+		if (s_len & 1)
 			kill(pid, SIGUSR2);
 		else
 			kill(pid, SIGUSR1);
 		pause();
-		str_len = str_len >> 1;
+		s_len = s_len >> 1;
 	}
+	return ;
 }
 
-static void	send_str(pid_t pid, char32_t *str, int str_len, struct sigaction act)
+static void	send_str(pid_t pid, char *str, int s_len, struct sigaction act)
 {
 	int		i;
-	char32_t	c;
-	int	index;
+	char	c;
+	int		index;
 
 	if (sigaction(SIGUSR2, &act, NULL) == -1)
 	{
@@ -53,7 +57,7 @@ static void	send_str(pid_t pid, char32_t *str, int str_len, struct sigaction act
 		exit (42);
 	}
 	index = -1;
-	while (++index < str_len)
+	while (++index < s_len)
 	{
 		c = str[index];
 		i = sizeof(c) * 8;
@@ -75,18 +79,23 @@ int	main(int argc, char **argv)
 	size_t				str_len;
 	int					pid;
 	struct sigaction	act;
+	sigset_t			blocked;
 
+	sigemptyset(&blocked);
+	sigaddset(&blocked, SIGUSR2);
+	act.sa_mask = blocked;
 	if (error_check(argc, argv) == FALSE)
 		return (42);
-	act.sa_handler = client_signal_handler;
+	act.sa_flags = SA_SIGINFO;
+	act.sa_sigaction = client_signal_handler;
 	if (sigaction(SIGUSR2, &act, NULL) == -1)
 	{
 		ft_putstr_fd("Error.\n", 2);
 		return (42);
 	}
 	pid = ft_atoi(argv[1]);
-	str_len = ft_strlen_unic((char32_t *)argv[2]);
+	str_len = ft_strlen(argv[2]);
 	send_strlen(pid, str_len, act);
-	send_str(pid, (char32_t *)argv[2], str_len, act);
+	send_str(pid, argv[2], str_len, act);
 	return (0);
 }

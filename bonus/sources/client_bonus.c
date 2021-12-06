@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 10:59:51 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/06 12:03:58 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/06 16:42:34 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,10 @@ int	main(int argc, char **argv)
 	}
 	pid = ft_atoi(argv[1]);
 	str_len = ft_strlen(argv[2]);
-	send_strlen(pid, str_len, act);
-	send_str(pid, argv[2], str_len, act);
+	if (str_len)
+	{
+		send_strlen(pid, str_len, act);
+		send_str(pid, argv[2], str_len, act);
+	}
 	return (0);
 }

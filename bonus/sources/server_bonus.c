@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 10:59:48 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/06 12:04:51 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/06 16:42:07 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 			str[s_len] = '\0';
 			metadata = FALSE;
 		}
-		else if (!metadata && roger_str(sig, str) == s_len)
+		else if (!metadata && roger_str(sig, str) >= s_len)
 			reset(&s_len, &metadata, str);
 		usleep(DELAY);
 		kill(info->si_pid, SIGUSR2);

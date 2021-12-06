@@ -84,7 +84,7 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 			str[s_len] = '\0';
 			metadata = FALSE;
 		}
-		else if (!metadata && roger_str(sig, str) == s_len)
+		else if (!metadata && roger_str(sig, str) >= s_len)
 			reset(&s_len, &metadata, str);
 		usleep(DELAY);
 		kill(info->si_pid, SIGUSR2);

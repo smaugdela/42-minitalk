@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 10:59:51 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/02 16:39:28 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/06 11:37:14 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,15 @@ static void	client_signal_handler(int param)
 	}
 }
 
-static void	send_strlen(pid_t pid, size_t str_len)
+static void	send_strlen(pid_t pid, size_t str_len, struct sigaction act)
 {
 	int	i;
 
+	if (sigaction(SIGUSR2, &act, NULL) == -1)
+	{
+		ft_putstr_fd("Error.\n", 2);
+		exit (42);
+	}
 	i = sizeof(str_len) * 8;
 	while (i--)
 	{
@@ -36,12 +41,17 @@ static void	send_strlen(pid_t pid, size_t str_len)
 	}
 }
 
-static void	send_str(pid_t pid, char32_t *str, int str_len)
+static void	send_str(pid_t pid, char32_t *str, int str_len, struct sigaction act)
 {
 	int		i;
 	char32_t	c;
 	int	index;
 
+	if (sigaction(SIGUSR2, &act, NULL) == -1)
+	{
+		ft_putstr_fd("Error.\n", 2);
+		exit (42);
+	}
 	index = -1;
 	while (++index < str_len)
 	{
@@ -76,7 +86,7 @@ int	main(int argc, char **argv)
 	}
 	pid = ft_atoi(argv[1]);
 	str_len = ft_strlen_unic((char32_t *)argv[2]);
-	send_strlen(pid, str_len);
-	send_str(pid, (char32_t *)argv[2], str_len);
+	send_strlen(pid, str_len, act);
+	send_str(pid, (char32_t *)argv[2], str_len, act);
 	return (0);
 }

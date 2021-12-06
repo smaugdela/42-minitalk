@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 10:50:55 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/02 16:24:18 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/06 11:13:36 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 # define MINITALK_BONUS_H
 
 # include "minitalk.h"
-# include <uchar.h>
+# include <stdint.h>
+
+typedef uint_least32_t char32_t;
 
 typedef struct s_client_info
 {

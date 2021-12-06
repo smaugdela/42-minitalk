@@ -47,7 +47,7 @@ static size_t	roger_str(int sig, char *str)
 	if (!i)
 	{
 		str[index_c++] = c;
-		i = 8;
+		i = max;
 		c = 0;
 	}
 	if (i)

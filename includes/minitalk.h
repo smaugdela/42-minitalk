@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 14:55:02 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/02 16:39:34 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/06 11:54:25 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,11 @@
 or 32768 for 32 bits linux, 
 or 4194304 for 64 bits linux.*/
 
-# define DELAY 5 // in microseconds (should be < 70 µs, around 60 µs for linux at 42).
+# define DELAY 15
+/*
+In microseconds.
+(should be < 70 µs, around 60 µs for linux at 42).
+*/
 
 t_bool	error_check(int argc, char **argv);
 

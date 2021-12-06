@@ -6,7 +6,7 @@
 /*   By: smagdela <smagdela@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 10:59:48 by smagdela          #+#    #+#             */
-/*   Updated: 2021/12/02 16:39:41 by smagdela         ###   ########.fr       */
+/*   Updated: 2021/12/06 11:31:47 by smagdela         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	roger_strlen(int sig, t_client_info *c)
 	c->i = c->max_str;
 	if (sig == 0 && c == NULL)
 		c->i = c->max_str;
-	else if (c->i--)
+	else if ((c->i)--)
 	{
 		if (sig == SIGUSR2)
 			c->s_len = c->s_len | (1 << ((c->max_str) - c->i - 1));
@@ -38,10 +38,10 @@ static size_t	roger_str(int sig, t_client_info *c)
 	--(c->i);
 	if (sig == SIGUSR2)
 		c->c = c->c | (1 << ((c->max_c) - c->i - 1));
-	if (!c->i)
+	if (!(c->i))
 	{
 		c->str[c->index_c] = c->c;
-		c->i = 8;
+		c->i = c->max_c;
 		c->c = 0;
 		++c->index_c;
 	}
@@ -78,12 +78,13 @@ static void	my_sig(int sig, siginfo_t *info, void *context)
 				exit(42);
 			client->str[client->s_len] = '\0';
 			client->metadata = FALSE;
-			kill(info->si_pid, SIGUSR2);
-			return ;
 		}
 		else if (!client->metadata
 			&& roger_str(sig, client) == client->s_len)
 			reset(client, clients);
+		usleep(DELAY);
+		kill(info->si_pid, SIGUSR2);
+		return ;
 	}
 }
 
